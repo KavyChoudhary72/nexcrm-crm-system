@@ -21,7 +21,7 @@ export const Auth: React.FC<AuthProps> = ({ onLoginSuccess }) => {
     setLoading(true);
     setError("");
 
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || "https://nexcrm-backend-ontv.onrender.com/api";
     const endpoint = isLogin ? "/auth/login" : "/auth/register";
     const payload = isLogin
       ? { email, password }
