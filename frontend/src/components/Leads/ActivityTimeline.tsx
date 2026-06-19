@@ -76,11 +76,40 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
           placeholder="Describe outcome details..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="w-full bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors resize-none"
+          className="w-full bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 rounded-xl px-3.5 py-3 text-xs text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors resize-none"
         />
+
+        {/* Quick Outcome Badges (Two-Tap Logging) */}
+        <div className="space-y-1.5 pt-1">
+          <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block px-1">
+            Quick-Select Outcome (Two-Tap Logging)
+          </span>
+          <div className="flex flex-wrap gap-2 px-1">
+            {[
+              { label: "📞 Left Voicemail", text: "Called client. Left a voicemail request." },
+              { label: "🤝 Connected", text: "Connected with client. Had a productive conversation." },
+              { label: "⏳ Busy", text: "Called client. Number was busy/engaged." },
+              { label: "🔕 No Answer", text: "Called client. Ringing but no answer." },
+              { label: "🛑 Not Interested", text: "Client stated they are not interested at this moment." },
+            ].map((note) => (
+              <button
+                key={note.label}
+                type="button"
+                onClick={() => {
+                  setType("Call");
+                  setContent(note.text);
+                }}
+                className="px-3.5 py-2.5 bg-slate-50 hover:bg-slate-100 active:bg-slate-200 dark:bg-slate-850 dark:hover:bg-slate-800 dark:active:bg-slate-750 text-gray-600 dark:text-slate-300 border border-gray-200/60 dark:border-slate-800 rounded-xl text-[10px] font-bold transition-all min-h-[40px] cursor-pointer"
+              >
+                {note.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {error && <p className="text-[10px] text-red-500">{error}</p>}
         <div className="flex justify-end">
-          <Button type="submit" size="sm" loading={submitting} className="text-xs !px-4 !py-2">
+          <Button type="submit" size="sm" loading={submitting} className="text-xs !px-4 !py-3">
             Log Action
           </Button>
         </div>

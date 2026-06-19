@@ -22,8 +22,7 @@ export const EmailButton: React.FC<EmailButtonProps> = ({
   return (
     <Button
       variant="outline"
-      size="sm"
-      className="gap-1.5"
+      className="gap-1.5 min-h-[48px]"
       onClick={() => window.open(url)}
       disabled={!email}
     >

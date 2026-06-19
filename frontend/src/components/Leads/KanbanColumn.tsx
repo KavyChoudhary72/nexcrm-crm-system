@@ -7,12 +7,14 @@ interface KanbanColumnProps {
   stage: LeadStatus;
   leads: Lead[];
   onLeadClick: (lead: Lead) => void;
+  onMoveStage: (id: string, newStatus: LeadStatus) => void;
 }
 
 export const KanbanColumn: React.FC<KanbanColumnProps> = ({
   stage,
   leads,
   onLeadClick,
+  onMoveStage,
 }) => {
   return (
     <div className="w-72 bg-gray-100/70 dark:bg-gray-900/30 border border-gray-200/40 dark:border-slate-800/80 p-4 rounded-3xl flex flex-col max-h-full shrink-0">
@@ -40,6 +42,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
                 lead={lead}
                 index={index}
                 onClick={() => onLeadClick(lead)}
+                onMoveStage={onMoveStage}
               />
             ))}
             {provided.placeholder}

@@ -57,6 +57,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
               stage={stage}
               leads={pipeline[stage]}
               onLeadClick={onLeadClick}
+              onMoveStage={onDragEnd}
             />
           ))}
         </div>

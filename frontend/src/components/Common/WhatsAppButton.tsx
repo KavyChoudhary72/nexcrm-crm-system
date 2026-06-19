@@ -24,8 +24,7 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
   return (
     <Button
       variant="outline"
-      size="sm"
-      className="!border-emerald-250 dark:!border-emerald-900/50 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 gap-1.5"
+      className="!border-emerald-250 dark:!border-emerald-900/50 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 gap-1.5 min-h-[48px]"
       onClick={() => window.open(url, "_blank", "noopener,noreferrer")}
     >
       <MessageSquare className="w-4 h-4 shrink-0" />

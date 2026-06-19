@@ -142,15 +142,20 @@ export class LeadController {
         }
       }
 
-      // Pagination
+      // Sorting & Pagination
+      const { sortBy = "createdAt", sortOrder = "desc" } = req.query;
       const pageNum = parseInt(page as string, 10);
       const limitNum = parseInt(limit as string, 10);
       const skipNum = (pageNum - 1) * limitNum;
 
+      const sortQuery: any = {};
+      const sortField = sortBy === "mobileNumber" ? "mobile" : sortBy === "companyName" ? "company" : sortBy;
+      sortQuery[sortField as string] = sortOrder === "asc" ? 1 : -1;
+
       const total = await Lead.countDocuments(query);
       const leads = await Lead.find(query)
         .populate("assignedTo", "name email role avatar")
-        .sort({ createdAt: -1 })
+        .sort(sortQuery)
         .skip(skipNum)
         .limit(limitNum);
 

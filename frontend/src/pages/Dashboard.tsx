@@ -38,7 +38,7 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="space-y-6 text-left p-1">
       {/* Header Panel */}
-      <div className="flex justify-between items-center bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800/80 rounded-3xl p-5 shadow-sm">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800/80 rounded-3xl p-5 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-2xl shrink-0">
             <LayoutDashboard className="w-5 h-5" />
@@ -56,7 +56,7 @@ export const Dashboard: React.FC = () => {
           variant="outline"
           size="sm"
           onClick={refreshDashboard}
-          className="rounded-xl flex items-center gap-1.5"
+          className="rounded-xl flex items-center gap-1.5 self-start sm:self-auto min-h-[40px]"
         >
           <RefreshCcw className="w-3.5 h-3.5" />
           Sync

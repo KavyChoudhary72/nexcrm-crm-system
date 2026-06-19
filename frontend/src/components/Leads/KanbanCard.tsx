@@ -1,21 +1,39 @@
 import React from "react";
 import { Draggable } from "@hello-pangea/dnd";
-import { motion } from "framer-motion";
-import { Lead } from "../../types/lead.types";
+import { Lead, LeadStatus } from "../../types/lead.types";
 import { formatCurrency } from "../../utils/formatters";
 import { AIBadge } from "./AIBadge";
 import { UserAvatar } from "../Common/UserAvatar";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { PIPELINE_STAGES } from "../../utils/constants";
 
 interface KanbanCardProps {
   lead: Lead;
   index: number;
   onClick: () => void;
+  onMoveStage: (id: string, newStatus: LeadStatus) => void;
 }
 
-export const KanbanCard: React.FC<KanbanCardProps> = ({ lead, index, onClick }) => {
+export const KanbanCard: React.FC<KanbanCardProps> = ({ lead, index, onClick, onMoveStage }) => {
   const assignedUser = typeof lead.assignedTo === "object" ? lead.assignedTo : null;
   const assignedUserName = assignedUser?.name;
   const assignedUserAvatar = assignedUser?.avatar;
+
+  const currentIndex = PIPELINE_STAGES.indexOf(lead.status);
+  const isFirstStage = currentIndex === 0;
+  const isLastStage = currentIndex === PIPELINE_STAGES.length - 1;
+
+  const handleMoveLeft = () => {
+    if (!isFirstStage) {
+      onMoveStage(lead._id, PIPELINE_STAGES[currentIndex - 1]);
+    }
+  };
+
+  const handleMoveRight = () => {
+    if (!isLastStage) {
+      onMoveStage(lead._id, PIPELINE_STAGES[currentIndex + 1]);
+    }
+  };
 
   return (
     <Draggable draggableId={lead._id} index={index}>
@@ -67,6 +85,34 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ lead, index, onClick }) 
                   <UserAvatar name={assignedUserName} avatar={assignedUserAvatar} size="xs" />
                 )}
               </div>
+            </div>
+
+            {/* Touch-Optimized Stage Move Controls (Min-height 48px for thumb target targets) */}
+            <div className="flex gap-2.5 mt-3.5 pt-3.5 border-t border-gray-100 dark:border-slate-800/50">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMoveLeft();
+                }}
+                disabled={isFirstStage}
+                className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 text-gray-500 dark:text-slate-400 border border-gray-200/60 dark:border-slate-800/60 rounded-xl disabled:opacity-20 disabled:pointer-events-none h-12 shadow-sm transition-colors"
+                title="Move to Previous Stage"
+              >
+                <ChevronLeft className="w-5.5 h-5.5" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMoveRight();
+                }}
+                disabled={isLastStage}
+                className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 text-gray-500 dark:text-slate-400 border border-gray-200/60 dark:border-slate-800/60 rounded-xl disabled:opacity-20 disabled:pointer-events-none h-12 shadow-sm transition-colors"
+                title="Move to Next Stage"
+              >
+                <ChevronRight className="w-5.5 h-5.5" />
+              </button>
             </div>
           </div>
         </div>

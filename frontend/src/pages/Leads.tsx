@@ -10,6 +10,7 @@ import { Modal } from "../components/UI/Modal";
 import { LeadForm } from "../components/Leads/LeadForm";
 import { LoadingSpinner } from "../components/UI/LoadingSpinner";
 import { Button } from "../components/UI/Button";
+import { Pagination } from "../components/UI/Pagination";
 import { Plus, Table, Kanban, ShieldAlert, Users } from "lucide-react";
 import { Lead, LeadStatus } from "../types/lead.types";
 
@@ -32,6 +33,9 @@ export const Leads: React.FC = () => {
     setSortOrder,
     createLead,
     updateLeadStatus,
+    page,
+    setPage,
+    totalPages,
   } = useLeads();
 
   const [viewMode, setViewMode] = useState<"Table" | "Kanban">("Kanban");
@@ -159,6 +163,13 @@ export const Leads: React.FC = () => {
           />
         </div>
       )}
+
+      {/* Pagination Controls */}
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
 
       {/* Add Lead Modal */}
       <Modal

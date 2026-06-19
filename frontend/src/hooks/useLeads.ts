@@ -13,22 +13,43 @@ export const useLeads = () => {
   const [sortField, setSortField] = useState<keyof Lead>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [limit] = useState(15); // download 15 leads at a time as requested (15-20)
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalLeads, setTotalLeads] = useState(0);
+
   const fetchLeads = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      const response = await leadService.getLeads();
+      const response = await leadService.getLeads({
+        page,
+        limit,
+        search: search.trim() || undefined,
+        status: statusFilter === "All" ? undefined : statusFilter,
+        source: sourceFilter === "All" ? undefined : sourceFilter,
+        sortBy: sortField,
+        sortOrder,
+      });
       setLeads(response.data || []);
+      setTotalPages(response.pages || 1);
+      setTotalLeads(response.total || 0);
     } catch (err: any) {
       setError(err.message || "Failed to load leads");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page, limit, search, statusFilter, sourceFilter, sortField, sortOrder]);
 
   useEffect(() => {
     fetchLeads();
   }, [fetchLeads]);
+
+  // Reset page to 1 on filter or search changes
+  useEffect(() => {
+    setPage(1);
+  }, [search, statusFilter, sourceFilter, sortField, sortOrder]);
 
   const createLead = async (leadData: Omit<Lead, "_id" | "aiScore">) => {
     try {
@@ -75,32 +96,8 @@ export const useLeads = () => {
   };
 
   const filteredLeads = useMemo(() => {
-    return leads
-      .filter((lead) => {
-        const matchesSearch =
-          lead.name.toLowerCase().includes(search.toLowerCase()) ||
-          lead.companyName.toLowerCase().includes(search.toLowerCase()) ||
-          lead.email.toLowerCase().includes(search.toLowerCase()) ||
-          lead.mobileNumber.toLowerCase().includes(search.toLowerCase()) ||
-          lead.requirement.toLowerCase().includes(search.toLowerCase());
-
-        const matchesStatus = statusFilter === "All" || lead.status === statusFilter;
-        const matchesSource = sourceFilter === "All" || lead.source === sourceFilter;
-
-        return matchesSearch && matchesStatus && matchesSource;
-      })
-      .sort((a, b) => {
-        let valA = a[sortField] ?? "";
-        let valB = b[sortField] ?? "";
-
-        if (typeof valA === "string") valA = valA.toLowerCase();
-        if (typeof valB === "string") valB = valB.toLowerCase();
-
-        if (valA < valB) return sortOrder === "asc" ? -1 : 1;
-        if (valA > valB) return sortOrder === "asc" ? 1 : -1;
-        return 0;
-      });
-  }, [leads, search, statusFilter, sourceFilter, sortField, sortOrder]);
+    return leads;
+  }, [leads]);
 
   return {
     leads,
@@ -122,5 +119,9 @@ export const useLeads = () => {
     updateLead,
     updateLeadStatus,
     deleteLead,
+    page,
+    setPage,
+    totalPages,
+    totalLeads,
   };
 };
