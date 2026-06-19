@@ -27,8 +27,8 @@ export class LeadController {
 
       const assignedToVal = req.user.role === "sales" ? req.user._id : (assignedTo || null);
 
-      // Calculate initial AI Score
-      const aiScore = await AIScoringService.calculateScore({
+      // Calculate initial deterministic Local Score instantly (non-blocking)
+      const aiScore = AIScoringService.calculateLocalScore({
         budget: budget || 0,
         source: source || "Other",
         requirement: requirement || "",
@@ -61,6 +61,21 @@ export class LeadController {
         content: `Lead registered in the system by ${req.user.name}`,
         companyId: req.user.companyId,
       });
+
+      // Recalculate and refine using Gemini API in the background (non-blocking)
+      (async () => {
+        try {
+          const finalScore = await AIScoringService.calculateScore({
+            budget: budget || 0,
+            source: source || "Other",
+            requirement: requirement || "",
+            activitiesCount: 0,
+          });
+          await Lead.findByIdAndUpdate(lead._id, { aiScore: finalScore });
+        } catch (error: any) {
+          console.error(`Error in background AI score refinement: ${error.message}`);
+        }
+      })();
 
       res.status(201).json({
         success: true,
@@ -268,22 +283,45 @@ export class LeadController {
         }
       }
 
-      // If budget, source, requirement, or activities change, update AI Lead Score
-      const activitiesCount = await Activity.countDocuments({ leadId: lead._id });
-      const newScore = await AIScoringService.calculateScore({
-        budget: updates.budget !== undefined ? updates.budget : lead.budget,
-        source: updates.source || lead.source,
-        requirement: updates.requirement || lead.requirement,
-        activitiesCount,
-      });
+      const budgetChanged = updates.budget !== undefined && Number(updates.budget) !== lead.budget;
+      const sourceChanged = updates.source !== undefined && updates.source !== lead.source;
+      const requirementChanged = updates.requirement !== undefined && updates.requirement !== lead.requirement;
+      const activitiesChanged = statusChanged || (updates.notes && Array.isArray(updates.notes) && updates.notes.filter((note: string) => !lead.notes.includes(note)).length > 0);
 
-      updates.aiScore = newScore;
+      // Instantly assign the local rule-based score if any input changed, avoiding external network bottlenecks
+      if (budgetChanged || sourceChanged || requirementChanged || activitiesChanged) {
+        const activitiesCount = await Activity.countDocuments({ leadId: lead._id });
+        updates.aiScore = AIScoringService.calculateLocalScore({
+          budget: updates.budget !== undefined ? Number(updates.budget) : lead.budget,
+          source: updates.source || lead.source,
+          requirement: updates.requirement !== undefined ? updates.requirement : lead.requirement,
+          activitiesCount,
+        });
+      }
 
-      // Apply updates
+      // Apply updates immediately
       const updatedLead = await Lead.findByIdAndUpdate(id, updates, {
         new: true,
         runValidators: true,
       }).populate("assignedTo", "name email role avatar");
+
+      // Refine AI Score in the background asynchronously (non-blocking) if inputs changed
+      if (budgetChanged || sourceChanged || requirementChanged || activitiesChanged) {
+        (async () => {
+          try {
+            const activitiesCount = await Activity.countDocuments({ leadId: lead._id });
+            const finalScore = await AIScoringService.calculateScore({
+              budget: updates.budget !== undefined ? Number(updates.budget) : lead.budget,
+              source: updates.source || lead.source,
+              requirement: updates.requirement !== undefined ? updates.requirement : lead.requirement,
+              activitiesCount,
+            });
+            await Lead.findByIdAndUpdate(id, { aiScore: finalScore });
+          } catch (error: any) {
+            console.error(`Error in background AI score update: ${error.message}`);
+          }
+        })();
+      }
 
       res.json({
         success: true,

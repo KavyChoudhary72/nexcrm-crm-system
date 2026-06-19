@@ -29,17 +29,32 @@ export class ActivityController {
         companyId: req.user.companyId,
       });
 
-      // Recalculate AI Lead Score based on updated activities count
+      // Recalculate local score instantly and update lead
       const activitiesCount = await Activity.countDocuments({ leadId: lead._id });
-      const newScore = await AIScoringService.calculateScore({
+      const localScore = AIScoringService.calculateLocalScore({
         budget: lead.budget,
         source: lead.source,
         requirement: lead.requirement,
         activitiesCount,
       });
 
-      lead.aiScore = newScore;
+      lead.aiScore = localScore;
       await lead.save();
+
+      // Refine AI Lead Score based on updated activities count in the background (non-blocking)
+      (async () => {
+        try {
+          const finalScore = await AIScoringService.calculateScore({
+            budget: lead.budget,
+            source: lead.source,
+            requirement: lead.requirement,
+            activitiesCount,
+          });
+          await Lead.findByIdAndUpdate(lead._id, { aiScore: finalScore });
+        } catch (error: any) {
+          console.error(`Error in background AI score update on activity add: ${error.message}`);
+        }
+      })();
 
       res.status(201).json({
         success: true,

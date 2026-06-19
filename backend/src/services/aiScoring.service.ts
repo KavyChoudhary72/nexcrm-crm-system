@@ -31,13 +31,13 @@ export class AIScoringService {
 You are a sales intelligence expert. Assess the following lead and assign a probability conversion score between 1 and 100 (where 1 is cold/unlikely to buy, and 100 is hot/extremely ready to buy).
 
 Lead Profile:
-- Budget: $${leadData.budget}
+- Budget: ₹${leadData.budget} INR
 - Lead Source: ${leadData.source}
 - Lead Requirements/Notes: ${leadData.requirement || "None specified"}
 - Lead Engagement Activities: ${leadData.activitiesCount}
 
 Assess the lead using these parameters:
-- Budget size (standard digital marketing/software service ranges: $1,000 to $10,000+). Higher is better.
+- Budget size (standard digital marketing/software service ranges: ₹10,000 to ₹5,00,000+ INR). Higher is better.
 - Lead Source quality (Referral > Website Form > WhatsApp > Facebook Ads / Instagram Ads > Other).
 - Requirement detail (clear and specific requirements indicate high intent).
 - Activities level (higher activity count means more interaction and interest).
@@ -70,7 +70,7 @@ Respond ONLY with a single integer between 1 and 100. Do not include any explana
   /**
    * Deterministic rule-based score calculation used as a local fallback.
    */
-  private static calculateLocalScore(leadData: {
+  public static calculateLocalScore(leadData: {
     budget: number;
     source: string;
     requirement?: string;
@@ -78,12 +78,12 @@ Respond ONLY with a single integer between 1 and 100. Do not include any explana
   }): number {
     let score = 20; // base score
 
-    // 1. Budget Contribution (max 30 pts)
-    if (leadData.budget >= 10000) score += 30;
-    else if (leadData.budget >= 5000) score += 25;
-    else if (leadData.budget >= 2500) score += 20;
-    else if (leadData.budget >= 1000) score += 15;
-    else if (leadData.budget >= 500) score += 10;
+    // 1. Budget Contribution (max 30 pts) in INR
+    if (leadData.budget >= 500000) score += 30;
+    else if (leadData.budget >= 100000) score += 25;
+    else if (leadData.budget >= 50000) score += 20;
+    else if (leadData.budget >= 25000) score += 15;
+    else if (leadData.budget >= 10000) score += 10;
     else if (leadData.budget > 0) score += 5;
 
     // 2. Lead Source Contribution (max 25 pts)
