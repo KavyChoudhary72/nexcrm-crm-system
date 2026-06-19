@@ -10,7 +10,7 @@ export const Layout: React.FC = () => {
   const location = useLocation();
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-screen overflow-hidden bg-gray-50 dark:bg-slate-950 transition-colors duration-250">
+    <div className="flex flex-col md:flex-row h-[100dvh] w-screen overflow-hidden bg-gray-50 dark:bg-slate-950 transition-colors duration-250">
       <div className="flex flex-1 overflow-hidden relative flex-col md:flex-row">
         {/* Sidebar Navigation */}
         <Sidebar />
@@ -21,7 +21,7 @@ export const Layout: React.FC = () => {
           <Header />
 
           {/* Content Stages */}
-          <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-6 md:p-8 pb-20 md:pb-8 custom-scrollbar relative">
+          <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-6 md:p-8 pb-28 md:pb-8 custom-scrollbar relative">
             <AnimatePresence mode="wait">
               <motion.div
                 key={location.pathname}

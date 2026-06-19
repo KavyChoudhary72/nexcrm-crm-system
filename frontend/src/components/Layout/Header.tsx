@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { LogOut, Sun, Moon } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useDarkMode } from "../../hooks/useDarkMode";
@@ -9,8 +10,15 @@ export const Header: React.FC = () => {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   return (
-    <header className="h-16 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800/60 flex items-center justify-between px-8 z-10 shrink-0">
-      <h2 className="font-bold text-gray-800 dark:text-white text-base tracking-tight">
+    <header className="h-16 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800/60 flex items-center justify-between px-4 sm:px-8 z-10 shrink-0">
+      <Link to="/" className="flex items-center gap-2 md:hidden hover:opacity-80 transition-opacity">
+        <div className="w-8 h-8 bg-gradient-to-tr from-violet-600 to-purple-500 rounded-lg flex items-center justify-center font-extrabold text-sm text-white shadow-md shadow-violet-500/10">
+          N
+        </div>
+        <span className="font-extrabold text-sm tracking-tight text-gray-900 dark:text-white">NEXCRM</span>
+      </Link>
+
+      <h2 className="hidden md:block font-bold text-gray-800 dark:text-white text-base tracking-tight">
         Command Terminal Workspace
       </h2>
 
