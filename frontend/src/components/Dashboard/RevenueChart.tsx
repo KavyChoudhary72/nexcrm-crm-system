@@ -76,7 +76,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
           color: "rgba(156, 163, 175, 0.08)",
         },
         ticks: {
-          callback: (value: any) => `$${value >= 1000 ? (value / 1000).toFixed(0) + "k" : value}`,
+          callback: (value: any) => `₹${value >= 1000 ? (value / 1000).toFixed(0) + "k" : value}`,
           font: { size: 10 },
         },
       },

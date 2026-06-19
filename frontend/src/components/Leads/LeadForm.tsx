@@ -175,7 +175,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
           options={sourceOptions}
         />
         <Input
-          label="Est. Budget ($)"
+          label="Est. Budget (₹)"
           type="number"
           placeholder="Budget amount"
           value={budget}

@@ -28,8 +28,8 @@ router.post(
         "Other",
       ])
       .withMessage("Invalid lead source"),
-    body("budget").optional().isNumeric().withMessage("Budget must be a number"),
-    body("email").optional().isEmail().withMessage("Invalid email format").normalizeEmail(),
+    body("budget").optional({ values: "falsy" }).isNumeric().withMessage("Budget must be a number"),
+    body("email").optional({ values: "falsy" }).isEmail().withMessage("Invalid email format").normalizeEmail(),
     validateResult,
   ],
   LeadController.createLead
@@ -45,8 +45,8 @@ router.get("/:id", LeadController.getLeadById);
 router.patch(
   "/:id",
   [
-    body("email").optional().isEmail().withMessage("Invalid email format").normalizeEmail(),
-    body("budget").optional().isNumeric().withMessage("Budget must be a number"),
+    body("email").optional({ values: "falsy" }).isEmail().withMessage("Invalid email format").normalizeEmail(),
+    body("budget").optional({ values: "falsy" }).isNumeric().withMessage("Budget must be a number"),
     body("status")
       .optional()
       .isIn([

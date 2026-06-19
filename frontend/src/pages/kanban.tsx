@@ -410,7 +410,7 @@ export const Kanban: React.FC = () => {
                   {/* Budget */}
                   <div className="space-y-1">
                     <label className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Estimated Budget ($)
+                      Estimated Budget (₹)
                     </label>
                     <input
                       type="number"

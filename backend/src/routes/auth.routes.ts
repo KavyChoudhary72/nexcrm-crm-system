@@ -75,7 +75,7 @@ router.patch(
   [
     body("name").optional().trim(),
     body("email")
-      .optional()
+      .optional({ values: "falsy" })
       .isEmail()
       .withMessage("Please enter a valid email address")
       .normalizeEmail(),
