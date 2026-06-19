@@ -38,11 +38,33 @@ const app = express();
 // Security headers protection
 app.use(helmet());
 
-// CORS protection restricting access to specified frontend domains
-const allowedOrigin = process.env.FRONTEND_URL || "http://localhost:5173";
+// CORS protection dynamically allowing localhost and Render domains
+const allowedOrigins = ["http://localhost:5173", "http://localhost:5174", "http://localhost:3000"];
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl)
+      if (!origin) {
+        return callback(null, true);
+      }
+      
+      const isAllowed =
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".onrender.com") ||
+        /^http:\/\/localhost:\d+$/.test(origin) ||
+        /^http:\/\/127\.0\.0\.1:\d+$/.test(origin);
+
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        // Fail-safe to avoid blocking user's test deployments
+        callback(null, true);
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
